@@ -28,7 +28,7 @@ def main(local_rank, config):
     print("========| BUILD TRAINER")
     trainer = HyperVisLocTrainer(
         model=model,
-        model_generator=generate_resnet18,
+        model_generator=generate_resnet18(1),
         criterion=criterion,
         optimizer=optimizer,
         train_dataloader=train_loader,
