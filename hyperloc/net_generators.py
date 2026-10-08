@@ -1,16 +1,11 @@
 import timm 
-from torch import nn
+
+def get_model(name, emb_size):
+    return timm.create_model(name, num_classes=emb_size, pretrained=False)
 
 
 def generate_resnet18(number: int):
-    def get_model():
-        model = timm.create_model("resnet18", pretrained=False)
-        model.fc = nn.Linear(in_features=512, out_features=2)
-        return model
-
     def generate():
-        return [get_model() for _ in range(number)]
+        return [get_model("resnet18", emb_size=2) for _ in range(number)]
 
     return generate
-
-    

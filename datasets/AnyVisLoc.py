@@ -52,6 +52,8 @@ class _AnyVisLocPart(Dataset):
                  data: list[dict], 
                  satellite_resize: int, 
                  image_resize: int):
+        super().__init__()
+
         self.data = data 
         self.satellite_resize = satellite_resize
         self.image_resize = image_resize
@@ -148,7 +150,7 @@ class _AnyVisLocPart(Dataset):
         image = self.image_compose(image=image)["image"]
         res = self.satellite_image_compose(image=satellite_image, keypoints=point)
         sat_image = res["image"]
-        point = torch.tensor(res["keypoints"][0])
+        point = torch.tensor(res["keypoints"][0]) / self.satellite_resize
 
         return point, sat_image, image
 
@@ -198,9 +200,9 @@ class AnyVisLocDataset:
         self.test_part = _AnyVisLocPart(self.test_part, satellite_resize, image_resize)
 
 
-    def get_train_part(self):
+    def get_train_part(self) -> _AnyVisLocPart:
         return self.train_part
 
 
-    def get_test_part(self):
+    def get_test_part(self) -> _AnyVisLocPart:
         return self.test_part
