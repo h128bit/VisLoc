@@ -4,4 +4,4 @@ tqdm
 opencv-python
 timm
 transformers
-ppuda
+ppuda @ git+https://github.com/facebookresearch/ppuda.git
