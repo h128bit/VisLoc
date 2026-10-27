@@ -1,5 +1,5 @@
 pytorch-ignite==0.5.5
-albumentations
+albumentations==2.4.13
 tqdm
 opencv-python
 timm
