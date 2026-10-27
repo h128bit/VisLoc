@@ -118,19 +118,25 @@ class _AnyVisLocPart(Dataset):
         point = list(file["xyz"])[0:2]
 
         satellite_image = Image.open(root / meta["satellite_path"])
+        sat_w, sat_h = satellite_image.size
         satellite_image = np.array(satellite_image)
 
         map_resolution = meta["map_resolution"]
         map_origin = meta["map_origin"]
 
         point = coords_to_pixel(point, map_resolution, map_origin)
+        point = list(point)
         # for points out of bound
         mv = min(point)
         if mv < 0:
-            point = list(point)
             mv_idx = point.index(mv)
             point[mv_idx] = 0
+        if point[0] > sat_w:
+            point[0] = sat_w
+        if point[1] > sat_h:
+            point[1] = sat_h
         point = np.array([point])
+
 
         image = self.image_compose(image=image)["image"]
         res = self.satellite_image_compose(image=satellite_image, keypoints=point)
