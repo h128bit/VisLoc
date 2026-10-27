@@ -12,6 +12,12 @@ from hyperloc import HyperVisLocTrainer, HyperLoc, generate_resnet18,  get_model
 from datasets import AnyVisLocDataset, ArchImageDataset
 
 
+
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = None
+
+
+
 def main(local_rank, config):
     print("========| BUILD DATASET")
     dataset = AnyVisLocDataset(path_to_scenes=config["path_to_scenes"], 
