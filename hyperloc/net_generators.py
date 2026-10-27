@@ -5,7 +5,8 @@ def get_model(name, emb_size):
 
 
 def generate_resnet18(number: int):
-    def generate():
-        return [get_model("resnet18", emb_size=2) for _ in range(number)]
+    def generate(device: str):
+        return [get_model("resnet18", emb_size=2).to(device) for _ in range(number)]
 
     return generate
+        

@@ -7,6 +7,7 @@ from typing import Any
 import cv2
 import torch
 import numpy as np
+from tqdm import tqdm
 from PIL import Image
 import albumentations as A
 from albumentations.pytorch import ToTensorV2
@@ -21,27 +22,6 @@ def coords_to_pixel(point: list[int|float]|tuple[int|float, int|float],
     
     x = int((x_meters - map_origin[0]) / map_resolution[0])
     y = int((y_meters - map_origin[1]) / map_resolution[1])
-
-    return x, y
-
-
-def correct_coord_after_map_resize(point: list[int|float]|tuple[int|float, int|float], 
-                                   resize: int, 
-                                   image_size: list[int]|tuple[int, int], 
-                                   map_resolution: list[float]|tuple[float, float], 
-                                   map_origin: list[float]|tuple[float, float]) -> tuple[int, int]:
-    x_meters, y_meters = coords_to_pixel(point, map_resolution, map_origin)
-
-    x = int((x_meters - map_origin[0]) / map_resolution[0])
-    y = int((y_meters - map_origin[1]) / map_resolution[1]) 
-
-    w, h = image_size
-
-    scale_x = resize / w
-    scale_y = resize / h
-
-    x = int(x * scale_x)
-    y = int(y * scale_y)
 
     return x, y
 
@@ -126,25 +106,30 @@ class _AnyVisLocPart(Dataset):
 
     def __len__(self) -> int:
         return len(self.data)
-
+        
 
     def __getitem__(self, index) -> Any:
         npz_file, meta = self.data[index]
 
-        print(npz_file)
-
         root = Path(meta["root_path"])
 
         file = np.load(root / npz_file)
-        image = np.transpose(file["image"], (1, 0, 2)) #  from whc to hwc format
-        point = file["xyz"][0:2]
+        image = file["image"] 
+        point = list(file["xyz"])[0:2]
 
-        satellite_image = np.array(Image.open(root / meta["satellite_path"]))
-        satellite_image = np.transpose(satellite_image, (1, 0, 2)) #  from whc to hwc format
+        satellite_image = Image.open(root / meta["satellite_path"])
+        satellite_image = np.array(satellite_image)
+
         map_resolution = meta["map_resolution"]
         map_origin = meta["map_origin"]
 
         point = coords_to_pixel(point, map_resolution, map_origin)
+        # for points out of bound
+        mv = min(point)
+        if mv < 0:
+            point = list(point)
+            mv_idx = point.index(mv)
+            point[mv_idx] = 0
         point = np.array([point])
 
         image = self.image_compose(image=image)["image"]
@@ -164,7 +149,7 @@ class AnyVisLocDataset:
                  split_ratio: float=0.7):
         
         self.scenes_data = list()
-        for scene_path in path_to_scenes:
+        for scene_path in tqdm(path_to_scenes, desc="Prepare data: "):
             scene_path = Path(scene_path)
             scene_files = os.listdir(scene_path)
             pattern = re.compile(r".+reference\.json")
