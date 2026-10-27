@@ -3,3 +3,4 @@ albumentations
 tqdm
 opencv-python
 timm
+transformers
