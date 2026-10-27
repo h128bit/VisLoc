@@ -3,5 +3,5 @@ albumentations
 tqdm
 opencv-python
 timm
-transformers
+transformers==5.14.1
 ppuda @ git+https://github.com/facebookresearch/ppuda.git
