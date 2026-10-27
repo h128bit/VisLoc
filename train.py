@@ -67,5 +67,5 @@ if __name__ == "__main__":
     }
 
 
-    with idist.launcher.Parallel(backend=None) as parallel:
+    with idist.Parallel(backend=None) as parallel:
         parallel.run(main, config)

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "visloc"
+version = "0.0.1"
+description = ""
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    {name = "h128bit"}
+]
+urls = {Homepage = ""}
+keywords = ["ghn3"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+dependencies = [
+    "pytorch-ignite==0.5.5",
+    "albumentations",
+    "tqdm",
+    "opencv-python",
+    "timm"
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+exclude = ["docs*", "tests*"]
