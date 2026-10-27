@@ -11,7 +11,7 @@ requires-python = ">=3.10"
 authors = [
     {name = "h128bit"}
 ]
-urls = {Homepage = ""}
+urls = {Homepage = "https://github.com/h128bit/VisLoc"}
 keywords = ["ghn3"]
 classifiers = [
     "Programming Language :: Python :: 3",
