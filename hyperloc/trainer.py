@@ -113,6 +113,10 @@ class HyperVisLocTrainer:
 
         archs = self.model_generator(self.device)
 
+        current_size = sat_images.shape[0]
+        if len(archs) > current_size:
+            archs = archs[:current_size]
+
         predicted_archs = self.model(archs, sat_images)
 
         stacked_params, stacked_buffers = stack_module_state(predicted_archs)
