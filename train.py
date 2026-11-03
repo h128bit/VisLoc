@@ -24,7 +24,7 @@ def main(local_rank, config):
     dataset = AnyVisLocDataset(path_to_scenes=config["path_to_scenes"], 
                                satellite_resize=config["sat_image_size"], 
                                image_resize=config["image_size"],
-                               tile_size=config["tile_size"]
+                               tile_size=config["tile_size"],
                                do_sat_tiff_convert=is_main_rank)
     idist.barrier()
     train_dataset = dataset.get_train_part()
