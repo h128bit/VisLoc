@@ -115,7 +115,6 @@ class HyperVisLocTrainer:
             archs = self.model_generator(self.device)
         else:
             archs = self.model_generator(self.device, n=sat_images.shape[0])
-        print(f"num archs {len(archs)}, batch_size: sat {sat_images.shape}, img {images.shape}")
         predicted_archs = self.model(archs, sat_images)
 
         stacked_params, stacked_buffers = stack_module_state(predicted_archs)

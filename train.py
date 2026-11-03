@@ -19,6 +19,9 @@ Image.MAX_IMAGE_PIXELS = None
 
 
 def main(local_rank, config):
+    import warnings
+    warnings.filterwarnings("ignore")
+
     is_main_rank = idist.get_rank() == 0
     print("========| BUILD DATASET")
     dataset = AnyVisLocDataset(path_to_scenes=config["path_to_scenes"], 
@@ -78,7 +81,7 @@ if __name__ == "__main__":
     }
     config = {
         "ghn_config": ghn_config,
-        "batch_size": 8,   
+        "batch_size": 16,   
         "lr": 1e-3,
         "max_epochs": 100,
         "sat_image_size": 1024,
