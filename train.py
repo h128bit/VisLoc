@@ -9,7 +9,7 @@ import ignite.distributed as idist
 
 from ghn3 import GHN3
 from hyperloc import HyperVisLocTrainer, HyperLoc, generate_resnet18,  get_model
-from datasets import AnyVisLocDataset, ArchImageDataset
+from datasets import AnyVisLocDataset
 
 
 
@@ -19,10 +19,14 @@ Image.MAX_IMAGE_PIXELS = None
 
 
 def main(local_rank, config):
+    is_main_rank = idist.get_rank() == 0
     print("========| BUILD DATASET")
     dataset = AnyVisLocDataset(path_to_scenes=config["path_to_scenes"], 
                                satellite_resize=config["sat_image_size"], 
-                               image_resize=config["image_size"])
+                               image_resize=config["image_size"],
+                               tile_size=config["tile_size"]
+                               do_sat_tiff_convert=is_main_rank)
+    idist.barrier()
     train_dataset = dataset.get_train_part()
     eval_dataset = dataset.get_test_part()
 
@@ -55,21 +59,33 @@ def main(local_rank, config):
 
 
 if __name__ == "__main__":
-    path_to_train_scenes = [r"C:\Users\t.asmus\Desktop\data\AnyVisLoc\Scene_10\Scene_10"]
+    path_to_train_scenes = [
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_01",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_02",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_03",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_04",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_05",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_06",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_07",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_08",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_09",
+        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_10",
+        ]
     ghn_config = {
         "max_shape": (1000, 1000, 10, 10),
         "num_classes": 2,
-        "hid": 80
+        "hid": 256
     }
     config = {
         "ghn_config": ghn_config,
-        "batch_size": 1,   
+        "batch_size": 64,   
         "lr": 1e-3,
-        "max_epochs": 1,
-        "sat_image_size": 256,
-        "image_size": 64,
-        "log_path": "./tests/runs",
-        "path_to_scenes": path_to_train_scenes
+        "max_epochs": 100,
+        "sat_image_size": 1024,
+        "image_size": 256,
+        "log_path": "./skip-visloc_runs/run",
+        "path_to_scenes": path_to_train_scenes,
+        "tile_size": 2992
     }
 
 
