@@ -1,9 +1,3 @@
-import os
-os.environ["PYTHONWARNINGS"] = "ignore"
-
-import warnings
-warnings.filterwarnings("ignore")
-
 import torch
 import ignite.distributed as idist
 
@@ -16,11 +10,18 @@ from datasets import AnyVisLocDataset
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 
+import os
+os.environ["PYTHONWARNINGS"] = "ignore"
+
+import warnings
+warnings.filterwarnings("ignore")
+warnings.filterwarnings(
+    "ignore", 
+    message=".*for efficiency, it is recommended to use ghn3.ops.*"
+)
 
 
 def main(local_rank, config):
-    import warnings
-    warnings.filterwarnings("ignore")
 
     is_main_rank = idist.get_rank() == 0
     print("========| BUILD DATASET")
