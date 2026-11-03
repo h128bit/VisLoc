@@ -55,66 +55,66 @@ class _AnyVisLocPart(Dataset):
         self.tile_size = tile_size
 
         self.image_compose = A.Compose([
-            # A.ColorJitter(
-            #     brightness_range=(0.7, 1.3),  
-            #     contrast_range=(0.7, 1.3),
-            #     saturation_range=(0.8, 1.3),
-            #     hue_range=(-0.05, 0.05),
-            #     p=0.15
-            # ),
+            A.ColorJitter(
+                brightness_range=(0.7, 1.3),  
+                contrast_range=(0.7, 1.3),
+                saturation_range=(0.8, 1.3),
+                hue_range=(-0.05, 0.05),
+                p=0.15
+            ),
 
-            # A.OneOf([
-            #     A.Blur(blur_range=(3, 7), p=1.0),
-            #     A.GaussianBlur(blur_range=(3, 7), p=1.0),
-            #     A.MotionBlur(blur_range=(3, 7), p=1.0),
-            #     A.MedianBlur(blur_range=(3, 7), p=1.0),
-            #     A.GlassBlur(sigma=0.7, max_delta=2, iterations=2, p=1.0),
-            # ], p=0.15),
+            A.OneOf([
+                A.Blur(blur_range=(3, 7), p=1.0),
+                A.GaussianBlur(blur_range=(3, 7), p=1.0),
+                A.MotionBlur(blur_range=(3, 7), p=1.0),
+                A.MedianBlur(blur_range=(3, 7), p=1.0),
+                A.GlassBlur(sigma=0.7, max_delta=2, iterations=2, p=1.0),
+            ], p=0.15),
 
-            # A.RandomSizedCrop(
-            #     min_max_height=(100, 400),  
-            #     size=(self.image_resize, self.image_resize),
-            #     w2h_ratio=1.0, 
-            #     p=0.2
-            # ),
+            A.RandomSizedCrop(
+                min_max_height=(100, 400),  
+                size=(self.image_resize, self.image_resize),
+                w2h_ratio=1.0, 
+                p=0.2
+            ),
 
             A.Resize(height=self.image_resize, 
                      width=self.image_resize, 
                      interpolation=cv2.INTER_LINEAR, 
                      p=1.0),
 
-            # A.Normalize(
-            #     mean=(0.485, 0.456, 0.406), 
-            #     std=(0.229, 0.224, 0.225),   
-            #     max_pixel_value=255.0, 
-            #     p=1.0
-            # ),
+            A.Normalize(
+                mean=(0.485, 0.456, 0.406), 
+                std=(0.229, 0.224, 0.225),   
+                max_pixel_value=255.0, 
+                p=1.0
+            ),
 
             ToTensorV2()
         ])
 
         self.satellite_image_compose = A.Compose([
-            # A.ColorJitter(
-            #     brightness_range=(0.85, 1.1),  
-            #     contrast_range=(0.85, 1.1),
-            #     saturation_range=(0.85, 1.1),
-            #     hue_range=(-0.02, 0.02),
-            #     p=0.1
-            # ),
+            A.ColorJitter(
+                brightness_range=(0.85, 1.1),  
+                contrast_range=(0.85, 1.1),
+                saturation_range=(0.85, 1.1),
+                hue_range=(-0.02, 0.02),
+                p=0.1
+            ),
 
-            # A.RandomRotate90(p=0.15),
+            A.RandomRotate90(p=0.15),
 
             A.Resize(height=self.satellite_resize, 
                     width=self.satellite_resize, 
                     interpolation=cv2.INTER_LINEAR, 
                     p=1.0),
 
-            # A.Normalize(
-            #     mean=(0.485, 0.456, 0.406), 
-            #     std=(0.229, 0.224, 0.225),   
-            #     max_pixel_value=255.0, 
-            #     p=1.0
-            # ),
+            A.Normalize(
+                mean=(0.485, 0.456, 0.406), 
+                std=(0.229, 0.224, 0.225),   
+                max_pixel_value=255.0, 
+                p=1.0
+            ),
 
             ToTensorV2()
         ], keypoint_params=A.KeypointParams(coord_format='xy'))
@@ -148,7 +148,7 @@ class _AnyVisLocPart(Dataset):
         image = self.image_compose(image=image)["image"]
         res = self.satellite_image_compose(image=satellite_tile, keypoints=point)
         sat_image = res["image"]
-        point = torch.tensor(res["keypoints"][0]) #/ self.satellite_resize
+        point = torch.tensor(res["keypoints"][0]) / self.satellite_resize
 
         return point, sat_image, image
 
