@@ -101,9 +101,9 @@ class HyperVisLocTrainer:
     def _batch_to_device(self, batch):
         points, sat_images, images = batch
 
-        points = points.to(self.device)
-        sat_images = sat_images.to(self.device)
-        images = images.to(self.device)
+        points = points.to(self.device).to(torch.float32)
+        sat_images = sat_images.to(self.device).to(torch.float32)
+        images = images.to(self.device).to(torch.float32)
 
         return points, sat_images, images
 
