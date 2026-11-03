@@ -16,7 +16,7 @@ class HyperLoc(nn.Module):
         print(f"archs num in forward {len(tnets)}")
         print(f"x in forward {x.shape}")
         embbeds = self.embbender(x)
-        print(f"embbeds in forward {embbeds}")
+        print(f"embbeds in forward {embbeds.shape}")
         archs = self.ghn(tnets, embbeds)
 
         return archs
