@@ -111,16 +111,14 @@ class HyperVisLocTrainer:
     def _step(self, batch):
         points, sat_images, images = self._batch_to_device(batch)
 
-        archs = self.model_generator(self.device)
-
-        current_size = sat_images.shape[0]
-        if len(archs) > current_size:
-            archs = archs[:current_size]
+        if idist.get_world_size() == 1:
+            archs = self.model_generator(self.device)
+        else:
+            archs = self.model_generator(self.device, n=sat_images.shape[0])
 
         predicted_archs = self.model(archs, sat_images)
 
         stacked_params, stacked_buffers = stack_module_state(predicted_archs)
-
 
         params_in_dims = {k: 0 for k in stacked_params.keys()}
         buffers_in_dims = {k: 0 for k in stacked_buffers.keys()}

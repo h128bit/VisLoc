@@ -14,7 +14,7 @@ class HyperLoc(nn.Module):
 
     def forward(self, tnets, x):
         embbeds = self.embbender(x)
-
+        
         archs = self.ghn(tnets, embbeds)
 
         return archs

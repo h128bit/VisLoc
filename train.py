@@ -89,5 +89,5 @@ if __name__ == "__main__":
     }
 
 
-    with idist.Parallel(backend=None) as parallel:
+    with idist.Parallel(backend="nccl") as parallel:
         parallel.run(main, config)
