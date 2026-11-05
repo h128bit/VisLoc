@@ -191,7 +191,7 @@ class HyperVisLocTrainer:
             value = engine.state.output
             data = [epoch, iteration, value]
 
-            print(f"Epoch[{epoch}], Iter[{iteration}] Loss: {value:.5f}")
+            print(f"TRAIN. Epoch[{epoch}], Iter[{iteration}] Loss: {value:.5f}")
 
             self._write_in_csv_table(self._path_to_train_table, data)
 
@@ -204,7 +204,7 @@ class HyperVisLocTrainer:
             mae = engine.state.metrics["mae"]
             data = [epoch, iteration, mse, mae]
 
-            print(f"Epoch[{epoch}], Iter[{iteration}] MSE: {mse:.5f} MAE: {mae:.5f}")
+            print(f"EVAL. Epoch[{epoch}], Iter[{iteration}] MSE: {mse:.5f} MAE: {mae:.5f}")
 
             self._write_in_csv_table(self._path_to_eval_table, data)
 
