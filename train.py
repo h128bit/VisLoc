@@ -81,7 +81,7 @@ if __name__ == "__main__":
     }
     config = {
         "ghn_config": ghn_config,
-        "batch_size": 16,   
+        "batch_size": 8,   
         "lr": 1e-3,
         "max_epochs": 100,
         "sat_image_size": 1536,
