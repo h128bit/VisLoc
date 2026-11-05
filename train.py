@@ -20,7 +20,7 @@ def main(local_rank, config):
     warnings.filterwarnings(
         "ignore", 
         message=".*for efficiency, it is recommended to use ghn3.ops.*"
-)
+    )
 
     is_main_rank = idist.get_rank() == 0
     print("========| BUILD DATASET")
