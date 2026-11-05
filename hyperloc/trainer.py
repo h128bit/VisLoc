@@ -199,7 +199,7 @@ class HyperVisLocTrainer:
     def log_metrics(self, engine):
         if idist.get_rank() == 0:
             epoch = engine.state.epoch
-            iteration = engine.state.iteration
+            iteration = self.trainer_engine.state.iteration  #engine.state.iteration
             mse = engine.state.metrics["mse"]
             mae = engine.state.metrics["mae"]
             data = [epoch, iteration, mse, mae]
