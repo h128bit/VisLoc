@@ -61,7 +61,7 @@ class HyperVisLocTrainer:
 
         # setup logging
         self.trainer_engine.add_event_handler(Events.ITERATION_COMPLETED, self.log_training_loss)
-        self.eval_engine.add_event_handler(Events.COMPLETED, self.log_metrics)
+        self.eval_engine.add_event_handler(Events.ITERATION_COMPLETED, self.log_metrics)
 
         self.log_path = Path(log_path)
         if idist.get_rank() == 0:
