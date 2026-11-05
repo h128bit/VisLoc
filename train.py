@@ -77,14 +77,14 @@ if __name__ == "__main__":
     ghn_config = {
         "max_shape": (1000, 1000, 10, 10),
         "num_classes": 2,
-        "hid": 512
+        "hid": 384
     }
     config = {
         "ghn_config": ghn_config,
         "batch_size": 16,   
         "lr": 1e-3,
         "max_epochs": 100,
-        "sat_image_size": 2048,
+        "sat_image_size": 1536,
         "image_size": 384,
         "log_path": "./skip-visloc_runs/run",
         "path_to_scenes": path_to_train_scenes,
