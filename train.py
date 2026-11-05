@@ -38,8 +38,9 @@ def main(local_rank, config):
     emb_model = get_model("resnet200", config["ghn_config"]["hid"])
     model = HyperLoc(embbender=emb_model, 
                      ghn=ghn)
-    optimizer = torch.optim.Adam(model.parameters(), lr=config["lr"])
-    scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+    optimizer = torch.optim.AdamW(model.parameters(), lr=config["lr"], weight_decay=1e-4)
+    # scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
+    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, T_max=config["max_epochs"], eta_min=1e-6)
     criterion = torch.nn.MSELoss()
 
     print("========| BUILD TRAINER")
@@ -82,7 +83,7 @@ if __name__ == "__main__":
     config = {
         "ghn_config": ghn_config,
         "batch_size": 8,   
-        "lr": 1e-3,
+        "lr": 1e-4,
         "max_epochs": 100,
         "sat_image_size": 1536,
         "image_size": 384,
