@@ -10,10 +10,6 @@ os.environ["PYTHONWARNINGS"] = "ignore"
 
 import warnings
 warnings.filterwarnings("ignore")
-warnings.filterwarnings(
-    "ignore", 
-    message=".*for efficiency, it is recommended to use ghn3.ops.*"
-)
 
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
