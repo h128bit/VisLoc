@@ -2,7 +2,6 @@ import gc
 import csv
 from pathlib import Path
 
-from datetime import datetime
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -138,9 +137,10 @@ class HyperVisLocTrainer:
         self.model.train()
         self.optimizer.zero_grad()
 
-        pred_points, target_points = self._step(batch)
+        with torch.autocast(device_type=str(self.device), dtype=torch.bfloat16):
+            pred_points, target_points = self._step(batch)
 
-        loss = self.criterion(pred_points, target_points)
+            loss = self.criterion(pred_points, target_points)
         loss.backward()
 
         self.optimizer.step()
@@ -160,10 +160,10 @@ class HyperVisLocTrainer:
     def eval_step(self, engine, batch):
         self.model.eval() 
 
-        with torch.no_grad():
+        with torch.no_grad(), torch.autocast(device_type=str(self.device), dtype=torch.bfloat16):
             pred_points, points = self._step(batch)
 
-        # normalizet coordinates to original
+        # normalized coordinates to original
         pred_points *= self.sat_image_size
         points *= self.sat_image_size 
 

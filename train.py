@@ -5,23 +5,21 @@ from ghn3 import GHN3
 from hyperloc import HyperVisLocTrainer, HyperLoc, generate_resnet18,  get_model
 from datasets import AnyVisLocDataset
 
+import os
+os.environ["PYTHONWARNINGS"] = "ignore"
 
+import warnings
+warnings.filterwarnings("ignore")
+warnings.filterwarnings(
+    "ignore", 
+    message=".*for efficiency, it is recommended to use ghn3.ops.*"
+)
 
 from PIL import Image
 Image.MAX_IMAGE_PIXELS = None
 
 
 def main(local_rank, config):
-    import os
-    os.environ["PYTHONWARNINGS"] = "ignore"
-
-    import warnings
-    warnings.filterwarnings("ignore")
-    warnings.filterwarnings(
-        "ignore", 
-        message=".*for efficiency, it is recommended to use ghn3.ops.*"
-    )
-
     is_main_rank = idist.get_rank() == 0
     print("========| BUILD DATASET")
     dataset = AnyVisLocDataset(path_to_scenes=config["path_to_scenes"], 
@@ -63,35 +61,41 @@ def main(local_rank, config):
 
 
 if __name__ == "__main__":
-    path_to_train_scenes = [
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_01",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_02",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_03",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_04",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_05",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_06",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_07",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_08",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_09",
-        "/workspace/tmp/dataset/anyvisloc/scenes/Scene_10",
-        ]
-    ghn_config = {
-        "max_shape": (1000, 1000, 10, 10),
-        "num_classes": 2,
-        "hid": 384
-    }
-    config = {
-        "ghn_config": ghn_config,
-        "batch_size": 8,   
-        "lr": 1e-4,
-        "max_epochs": 100,
-        "sat_image_size": 1536,
-        "image_size": 384,
-        "log_path": "./skip-visloc_runs/run",
-        "path_to_scenes": path_to_train_scenes,
-        "tile_size": 2992
-    }
+    import json 
 
+    path_to_config = "/workspace/tmp/visloc_train_config.json"
+    with open(path_to_config, "r", encoding="utf-8") as f:
+        s = f.read()
+        config = json.loads(s)
 
-    with idist.Parallel(backend="nccl") as parallel:
+    # path_to_train_scenes = [
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_01",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_02",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_03",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_04",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_05",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_06",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_07",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_08",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_09",
+    #     "/workspace/tmp/dataset/anyvisloc/scenes/Scene_10",
+    #     ]
+    # ghn_config = {
+    #     "max_shape": (1000, 1000, 10, 10),
+    #     "num_classes": 2,
+    #     "hid": 384
+    # }
+    # config = {
+    #     "ghn_config": ghn_config,
+    #     "batch_size": 8,   
+    #     "lr": 1e-4,
+    #     "max_epochs": 100,
+    #     "sat_image_size": 1536,
+    #     "image_size": 384,
+    #     "log_path": "./skip-visloc_runs/run",
+    #     "path_to_scenes": path_to_train_scenes,
+    #     "tile_size": 2992
+    # }
+
+    with idist.Parallel(backend=config["backend"]) as parallel:
         parallel.run(main, config)
