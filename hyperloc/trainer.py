@@ -2,6 +2,7 @@ import gc
 import csv
 from pathlib import Path
 
+from datetime import datetime
 import pandas as pd
 import torch
 import torch.nn as nn
@@ -65,13 +66,15 @@ class HyperVisLocTrainer:
 
         self.log_path = Path(log_path)
         if idist.get_rank() == 0:
-            i = 1
-            while True:
-                if self.log_path.exists():
-                    self.log_path = Path(str(self.log_path) + f"_{i}")
-                    i += 1
-                else:
-                    break
+            if self.log_path.exists():
+                i = 1
+                while True:
+                    tmp = Path(str(self.log_path) + f"_{i}")
+                    if tmp.exists():
+                        i += 1
+                    else:
+                        self.log_path = tmp
+                        break
             self.log_path.mkdir(parents=True, exist_ok=True)
 
             self.train_columns = ["epoch", "iteration", "value"]
